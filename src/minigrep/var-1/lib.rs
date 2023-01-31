@@ -2,36 +2,15 @@
 use std::fs;
 use std::error::Error;
 use std::env;
-pub struct Config {
-    pub query: String,
-    pub file_path: String,
+pub struct Config<'a> {
+    pub query: &'a String,        // вариант решения со ссылками в элементах структуры
+    pub file_path: &'a String,
     pub ignore_case: bool,
 }
 
-impl Config {
-    // pub fn build(args: &Vec<String>) -> Result<Config, &'static str>           // старая строка
-    // pub fn build(                                                              // так предложили сделать в книге
-    //    mut args: impl Iterator<Item = String>,
-    // ) -> Result<Config, &'static str> {
-        pub fn build(mut args: std::env::Args) -> Result<Config, &'static str> {  // !мне этот способ больше нравится 
-    // если бы нужно было обобщать, но ограничить T типажом, то так: fn build::<T: Iterator<Item = String>>(args: T)
-        args.next();
+impl<'a> Config<'a> {
+        pub fn build(args: &Vec<String>) -> Result<Config, &'static str> {  
 
-        let query = match args.next() {
-            Some(arg) => arg, 
-            None => return Err("Didn't get a query string"),
-        };
-
-        let file_path = match args.next() {
-            Some(arg) => arg, 
-            None => return Err("Didn't get a file path"),
-        };
-
-        let ignore_case = env::var("IGNORE_CASE").is_ok();
-
-        Ok(Config { query, file_path, ignore_case })
-
-/*    // старый код
         if args.len() < 3 {
             return Err("Not enough arguments");
         }
@@ -42,7 +21,7 @@ impl Config {
         let ignore_case = env::var("IGNORE_CASE").is_ok();
     
         Ok(Config { query, file_path, ignore_case })
-*/
+
     }
 
     pub fn search<'b>(query: &str, contents: &'b str) -> Vec<&'b str> {
