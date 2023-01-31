@@ -4,11 +4,9 @@ fn main () {
     
     post
         .add_text("I ate a salad for lunch today");
-    //assert_eq!("", post.content());  // для варианта с типаж-объектами
 
     let post = post
         .request_review();
-    //assert_eq!("", post.content());  // для варианта с типаж-объектами
 
     let mut post = post.reject();
 
