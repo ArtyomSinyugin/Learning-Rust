@@ -1,4 +1,4 @@
-use design_pattern::Post;
+use trait-object::Post;
 fn main () {
     let mut post = Post::new();
     
