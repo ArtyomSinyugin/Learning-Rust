@@ -1,62 +1,3 @@
-pub struct Post {  // первое из двух решений реализации кода
-    content: String,
-}
-impl Post {
-    pub fn new() -> DraftPost {
-        DraftPost {
-            content: String::new(),
-        }
-    }
-    pub fn content(&self) -> &str {
-        &self.content
-    }
-}
-pub struct DraftPost {
-    content: String,
-}
-impl DraftPost {
-    pub fn add_text(&mut self, text: &str) {
-        self.content.push_str(text);
-    }
-    pub fn request_review(self)-> PendingReviewPost {
-        PendingReviewPost {
-            content: self.content,
-        }  
-    }
-}
-pub struct PendingReviewPost {
-    content: String,
-}
-impl PendingReviewPost {
-    pub fn approve(self)-> PendingReviewPost2 {
-        PendingReviewPost2 {
-                content: self.content,
-            } 
-
-    }
-    pub fn reject(self)-> DraftPost {
-        DraftPost {
-            content: self.content,
-        }       
-    }
-}
-pub struct PendingReviewPost2 {
-    content: String,
-}
-impl PendingReviewPost2 {
-    pub fn approve(self)-> Post {
-            Post {
-                content: self.content,
-            } 
-
-    }
-    pub fn reject(self)-> DraftPost {
-        DraftPost {
-            content: self.content,
-        }       
-    }
-}
-/*
 pub struct Post {              // второй вариант с кодированием состояния с помощью типаж-объектов
     state: Option<Box<dyn State>>,
     content: String,
@@ -81,10 +22,11 @@ impl Post {
     }   
         //let state = self.state.take().unwrap(); // Хороший вариант решить задачу, но вопреки её требованиям
         //state.add_text(self, text);
-        //self.state = Some(state);  // так-как take() замещает Some на None, нужно вернуть Some обратно
-        // self.content.push_str(text); // первоначальное упрощение
+        //self.state = Some(state);  // так как take() замещает Some на None, нужно вернуть Some обратно
     
-    pub fn content(&self)-> &str {                           // отправляем content в State
+        // self.content.push_str(text); // Первоначальный вариант, упрощение от авторов книги
+    
+    pub fn content(&self)-> &str {                           
         self.state.as_ref().unwrap().content(self)
     }
     pub fn request_review (&mut self) {
@@ -110,7 +52,7 @@ impl Post {
 
 trait State {
     fn request_review(self: Box<Self>) -> Box<dyn State>;
-    fn content<'a>(&self, post: &'a Post) -> &'a str {                // работаем с content
+    fn content<'a>(&self, post: &'a Post) -> &'a str {               
         ""
     }
     fn approve(self: Box<Self>) -> Box<dyn State>;
@@ -133,7 +75,7 @@ impl State for Draft {
     fn check(&self) -> bool {true}
 }
 struct PendingReview {
-    count: u8,
+    count: u8,                    // решение задачи с двумя approve
 }
 
 impl State for PendingReview {
@@ -142,8 +84,8 @@ impl State for PendingReview {
     }  
     fn approve(self: Box<Self>) -> Box<dyn State> {
         match self.count {
-            1 => Box::new(Published {}),
-            _ => Box::new(PendingReview { count: 1 })
+            1 => Box::new(Published {}),                        // решение задачи с двумя approve
+            _ => Box::new(PendingReview { count: 1 })           // решение задачи с двумя approve
         }
         
     }
@@ -158,7 +100,7 @@ impl State for Published {
     fn request_review(self: Box<Self>) -> Box<dyn State> {
         self
     }
-    fn content<'a>(&self, post: &'a Post) -> &'a str {              // content возвращает срез строки
+    fn content<'a>(&self, post: &'a Post) -> &'a str {              
         &post.content
     }
     fn approve(self: Box<Self>) -> Box<dyn State> {
@@ -167,4 +109,4 @@ impl State for Published {
     fn reject(self: Box<Self>) -> Box<dyn State> {
         self
     }
-} */
+} 
